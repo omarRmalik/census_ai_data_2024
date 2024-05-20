@@ -41,7 +41,7 @@ app.layout = dbc.Container([
                         dcc.Dropdown(
                             id='question-dropdown',
                             options=[{'label': question, 'value': question} for question in national['question'].unique()],
-                            placeholder="Select Question"
+                            placeholder="Select Question", style={'width': '1250px'}
                         )
                     )
                 ], style={'height': '200px'}),
