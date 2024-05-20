@@ -24,6 +24,7 @@ national = (
     )
 )
 
+print(national['answer'].unique())
 # Instantiate app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
 
@@ -40,7 +41,8 @@ app.layout = dbc.Container([
                     dbc.CardBody(
                         dcc.Dropdown(
                             id='question-dropdown',
-                            options=[{'label': question, 'value': question} for question in national['question'].unique()],
+                            options= [{'label': question, 'value': question}
+                                      for question in national[national['answer'] != 'nan']['question'].unique()],
                             placeholder="Select Question", style={'width': '1250px'}
                         )
                     )
@@ -61,8 +63,11 @@ app.layout = dbc.Container([
 def update_bar_chart(question):
     if question:
         filtered_data = national.loc[national['question'] == question]
+        sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
+        sorted_data = sorted_data[sorted_data['answer'] != 'nan']
         fig = dcc.Graph(
-            figure=px.bar(filtered_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''}, template='plotly_white').update_layout(margin=dict(l=0, r=0, t=0, b=0))
+            figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
+                          template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
         )
         return dbc.CardBody(fig)
     else:
