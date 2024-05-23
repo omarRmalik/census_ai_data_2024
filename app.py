@@ -104,6 +104,33 @@ app.layout = dbc.Container([
             dbc.Row([
                 dbc.Card(id='graph-card', style={'height': '500px'})
             ])
+        ]),
+
+        dbc.Tab(label="Sector Trends", children=[
+            dbc.Row([
+                dbc.Card([
+                    dbc.CardHeader('Pick a Question and Sector'),
+                    dbc.CardBody([
+                        dcc.Dropdown(
+                            id='sector-question-dropdown',
+                            options=[{'label': question, 'value': question}
+                                     for question in sector['question'].unique()],
+                            placeholder="Select Question",
+                            style={'width': '600px', 'display': 'inline-block'}
+                        ),
+                        dcc.Dropdown(
+                            id='sector-dropdown',
+                            options=[{'label': industry, 'value': industry}
+                                     for industry in sector['industry'].unique()],
+                            placeholder="Select Sector",
+                            style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
+                        )
+                    ])
+                ], style={'height': '200px'}),
+            ], style={'marginBottom': '30px'}),
+            dbc.Row([
+                dbc.Card(id='sector-graph-card', style={'height': '500px'})
+            ])
         ])
     ])
 ])
@@ -126,6 +153,25 @@ def update_bar_chart(question):
         return dbc.CardBody(fig)
     else:
         return dbc.CardBody('Please select a question to view the bar chart.')
+
+# Sector bar chart callback
+
+@app.callback(
+    Output('sector-graph-card', 'children'),
+    [Input('sector-question-dropdown', 'value'), Input('sector-dropdown', 'value')]
+)
+def update_sector_bar_chart(question, sector_name):
+    if question and sector_name:
+        filtered_data = sector.loc[(sector['question'] == question) & (sector['industry'] == sector_name)]
+        sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
+        sorted_data = sorted_data[sorted_data['answer'] != 'nan']
+        fig = dcc.Graph(
+            figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
+                          template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
+        )
+        return dbc.CardBody(fig)
+    else:
+        return dbc.CardBody('Please select a question and sector to view the bar chart.')
 
 # Run the app
 if __name__ == '__main__':
