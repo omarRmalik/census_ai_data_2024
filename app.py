@@ -8,7 +8,7 @@ import numpy as np
 
 # Load data
 sheets = ['National Response Estimates', 'Sector Response Estimates', 'State Response Estimates', 'Employment Response Estimates']
-df = pd.read_excel('C:/Users/ormal/Documents/ai_data_census/ai_supplement_us_census.xlsx', sheet_name=sheets)
+df = pd.read_excel('C:/Users/ormal/Documents/ai_census_24/assets/ai_supplement_us_census.xlsx', sheet_name=sheets)
 
 # Question map
 
