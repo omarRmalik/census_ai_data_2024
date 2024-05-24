@@ -123,9 +123,16 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY], meta_tags=[{'
 
 # Define app layout
 app.layout = dbc.Container([
-    dbc.Row(
-        dbc.Col(html.H1("How are US Businesses Adopting AI?", className='text-center text-success mb-4'), width=12)
-    ),
+    dbc.Row([
+        dbc.Col(html.H1("How are US Businesses Adopting AI?", className='text-center text-success mb-4'), width=12),
+        dbc.Col(
+            html.P("AI is one of the transformative technologies of our times. How US businesses adopt this technology "
+                   "is of utmost importance. The US Census Bureau added supplemental content on AI to its Business Trends and "
+                   "Outlook Survey during December 2023 through February 2024. This app allows you to explore this data.",
+                   className='text-success'),
+            width=12
+        )
+    ]),
     dbc.Tabs([
         dbc.Tab(label="National Trends", children=[
             dbc.Row([
@@ -172,7 +179,7 @@ app.layout = dbc.Container([
                 dbc.Card(id='sector-graph-card', style={'height': '500px'})
             ])
         ]),
-dbc.Tab(label="State", children=[
+        dbc.Tab(label="State", children=[
            dbc.Row([
                dbc.Card([
                    dbc.CardHeader('Pick a Question and State'),
@@ -222,8 +229,12 @@ dbc.Tab(label="State", children=[
            ], style={'marginBottom': '30px'}),
            dbc.Row([
                dbc.Card(id='firm-size-graph-card', style={'height': '500px'})
+           ]),
+           dbc.Row([
+                dbc.Col(html.Img(src="/assets/aatiny.jpg", style={'marginRight': '50px'}, height="50px"), width=6, style={'textAlign': 'right'}),
+                ], style={"position": "fixed", "bottom": 8, "left": 8, "right": 8, "zIndex": 999}),
            ])
-       ])
+
     ])
 ])
 
