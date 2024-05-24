@@ -78,6 +78,46 @@ sector = (df['Sector Response Estimates']
           .drop('sector', axis='columns')
 )
 
+# State data cleanup
+
+state = (df['State Response Estimates']
+          .loc[lambda df_: df_['Question'].str.contains('applications|operations|changes')]
+          .drop(['Scope (see data dictionary)', 'Question ID', 'Answer ID'], axis='columns')
+          .replace('S', np.nan)
+          .dropna()
+          .rename(columns=lambda c: c.lower().replace(' ', '_'))
+          .sort_values(by='estimate', ascending=False)
+          .assign(
+              question = lambda df_: df_['question'].map(question_map),
+              answer = lambda df_: df_['answer'].astype('str'),
+              estimate=lambda df_: df_['estimate'].str.replace('%', '').replace('S', np.nan).astype('float'),
+              standard_error=lambda df_: df_['standard_error'].str.replace('%', '').replace('S', np.nan).astype('float')
+          )
+         )
+
+# Firm size dictionary
+
+label_to_size = {'A': 'Small', 'B': 'Small', 'C': 'Small', 'D': "Small", 'E': 'Medium', 'F': 'Medium', 'G': "Large"}
+
+# Employment data cleanup
+
+employment = (df['Employment Response Estimates']
+          .loc[lambda df_: df_['Question'].str.contains('applications|operations|changes')]
+          .drop(['Scope (see data dictionary)', 'Question ID', 'Answer ID'], axis='columns')
+          .replace('S', np.nan)
+          .dropna()
+          .rename(columns=lambda c: c.lower().replace(' ', '_'))
+          .sort_values(by='estimate', ascending=False)
+          .assign(
+              question = lambda df_: df_['question'].map(question_map),
+              emp_size = lambda df_: df_["empsize"].map(label_to_size),
+              answer = lambda df_: df_['answer'].astype('str'),
+              estimate=lambda df_: df_['estimate'].str.replace('%', '').astype('float'),
+              standard_error=lambda df_: df_['standard_error'].str.replace('%', '').astype('float')
+          )
+          .drop('empsize', axis='columns')
+         )
+
 # Instantiate app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
 
@@ -131,7 +171,59 @@ app.layout = dbc.Container([
             dbc.Row([
                 dbc.Card(id='sector-graph-card', style={'height': '500px'})
             ])
-        ])
+        ]),
+dbc.Tab(label="State", children=[
+           dbc.Row([
+               dbc.Card([
+                   dbc.CardHeader('Pick a Question and State'),
+                   dbc.CardBody([
+                       dcc.Dropdown(
+                           id='state-question-dropdown',
+                           options=[{'label': question, 'value': question}
+                                    for question in state['question'].unique()],
+                           placeholder="Select Question",
+                           style={'width': '600px', 'display': 'inline-block'}
+                       ),
+                       dcc.Dropdown(
+                           id='state-dropdown',
+                           options=[{'label': state, 'value': state}
+                                    for state in state['state'].unique()],
+                           placeholder="Select State",
+                           style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
+                       )
+                   ])
+               ], style={'height': '200px'}),
+           ], style={'marginBottom': '30px'}),
+           dbc.Row([
+               dbc.Card(id='state-graph-card', style={'height': '500px'})
+           ])
+       ]),
+       dbc.Tab(label="Firm Size", children=[
+           dbc.Row([
+               dbc.Card([
+                   dbc.CardHeader('Pick a Question and Firm Size'),
+                   dbc.CardBody([
+                       dcc.Dropdown(
+                           id='firm-question-dropdown',
+                           options=[{'label': question, 'value': question}
+                                    for question in employment['question'].unique()],
+                           placeholder="Select Question",
+                           style={'width': '600px', 'display': 'inline-block'}
+                       ),
+                       dcc.Dropdown(
+                           id='firm-size-dropdown',
+                           options=[{'label': size, 'value': size}
+                                    for size in employment['emp_size'].unique()],
+                           placeholder="Select Firm Size",
+                           style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
+                       )
+                   ])
+               ], style={'height': '200px'}),
+           ], style={'marginBottom': '30px'}),
+           dbc.Row([
+               dbc.Card(id='firm-size-graph-card', style={'height': '500px'})
+           ])
+       ])
     ])
 ])
 
@@ -172,6 +264,44 @@ def update_sector_bar_chart(question, sector_name):
         return dbc.CardBody(fig)
     else:
         return dbc.CardBody('Please select a question and sector to view the bar chart.')
+
+# State bar chart callback
+
+@app.callback(
+   Output('state-graph-card', 'children'),
+   [Input('state-question-dropdown', 'value'), Input('state-dropdown', 'value')]
+)
+def update_state_bar_chart(question, state_name):
+   if question and state_name:
+       filtered_data = state.loc[(state['question'] == question) & (state['state'] == state_name)]
+       sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
+       sorted_data = sorted_data[sorted_data['answer'] != 'nan']
+       fig = dcc.Graph(
+           figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
+                         template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
+       )
+       return dbc.CardBody(fig)
+   else:
+       return dbc.CardBody('Please select a question and state to view the bar chart.')
+
+# Firm size bar chart callback
+
+@app.callback(
+   Output('firm-size-graph-card', 'children'),
+   [Input('firm-question-dropdown', 'value'), Input('firm-size-dropdown', 'value')]
+)
+def update_firm_size_bar_chart(question, firm_size):
+   if question and firm_size:
+       filtered_data = employment.loc[(employment['question'] == question) & (employment['emp_size'] == firm_size)]
+       sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
+       sorted_data = sorted_data[sorted_data['answer'] != 'nan']
+       fig = dcc.Graph(
+           figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
+                         template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
+       )
+       return dbc.CardBody(fig)
+   else:
+       return dbc.CardBody('Please select a question and firm size to view the bar chart.')
 
 # Run the app
 if __name__ == '__main__':
