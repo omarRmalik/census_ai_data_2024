@@ -230,13 +230,12 @@ app.layout = dbc.Container([
            dbc.Row([
                dbc.Card(id='firm-size-graph-card', style={'height': '500px'})
            ]),
-           dbc.Row([
-                dbc.Col(html.Img(src="/assets/aatiny.jpg", style={'marginRight': '50px'}, height="50px"), width=6, style={'textAlign': 'right'}),
-                ], style={"position": "fixed", "bottom": 8, "left": 8, "right": 8, "zIndex": 999}),
-           ])
-
-    ])
-])
+    ]),
+]),
+    dbc.Row([
+        dbc.Col(html.Img(src="/assets/aatiny.jpg", style={'marginRight': '50px'}, height="50px"), width=6, style={'textAlign': 'right'}),
+        ], style={"position": "fixed", "bottom": '10px', "right": '10px', "zIndex": 999})
+       ])
 
 # National bar chart callback
 
