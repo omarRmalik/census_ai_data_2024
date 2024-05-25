@@ -179,7 +179,7 @@ app.layout = dbc.Container([
                 dbc.Card(id='sector-graph-card', style={'height': '500px'})
             ])
         ]),
-        dbc.Tab(label="State", children=[
+        dbc.Tab(label="State Trends", children=[
            dbc.Row([
                dbc.Card([
                    dbc.CardHeader('Pick a Question and State'),
@@ -205,7 +205,7 @@ app.layout = dbc.Container([
                dbc.Card(id='state-graph-card', style={'height': '500px'})
            ])
        ]),
-       dbc.Tab(label="Firm Size", children=[
+       dbc.Tab(label="Firm Size Trends", children=[
            dbc.Row([
                dbc.Card([
                    dbc.CardHeader('Pick a Question and Firm Size'),
@@ -311,7 +311,7 @@ def update_firm_size_bar_chart(question, firm_size):
        )
        return dbc.CardBody(fig)
    else:
-       return dbc.CardBody('Please select a question and firm size to view the bar chart.')
+       return dbc.CardBody('Please select a question and firm size category to view the bar chart.')
 
 # Run the app
 if __name__ == '__main__':
