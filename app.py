@@ -182,7 +182,7 @@ app.layout = dbc.Container([
         dbc.Tab(label="State Trends", children=[
            dbc.Row([
                dbc.Card([
-                   dbc.CardHeader('Pick a Question and State'),
+                   dbc.CardHeader('Pick a Question and one State'),
                    dbc.CardBody([
                        dcc.Dropdown(
                            id='state-question-dropdown',
@@ -208,7 +208,7 @@ app.layout = dbc.Container([
        dbc.Tab(label="Firm Size Trends", children=[
            dbc.Row([
                dbc.Card([
-                   dbc.CardHeader('Pick a Question and Firm Size'),
+                   dbc.CardHeader('Pick a Question and Firm Size category'),
                    dbc.CardBody([
                        dcc.Dropdown(
                            id='firm-question-dropdown',
@@ -221,7 +221,7 @@ app.layout = dbc.Container([
                            id='firm-size-dropdown',
                            options=[{'label': size, 'value': size}
                                     for size in employment['emp_size'].unique()],
-                           placeholder="Select Firm Size",
+                           placeholder="Select Firm Size category",
                            style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
                        )
                    ])
