@@ -121,6 +121,8 @@ employment = (df['Employment Response Estimates']
 # Instantiate app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
 
+server = app.server #required for deployment on render
+
 # Define app layout
 app.layout = dbc.Container([
     dbc.Row([
