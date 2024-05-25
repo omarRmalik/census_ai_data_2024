@@ -119,17 +119,17 @@ employment = (df['Employment Response Estimates']
          )
 
 # Instantiate app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MINTY], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
 
 # Define app layout
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H1("How are US Businesses Adopting AI?", className='text-center text-success mb-4'), width=12),
+        dbc.Col(html.H1("How are US Businesses Adopting AI?", className='text-center text-primary mb-4'), width=12),
         dbc.Col(
             html.P("AI is one of the transformative technologies of our times. How US businesses adopt this technology "
                    "is of utmost importance. The US Census Bureau added supplemental content on AI to its Business Trends and "
                    "Outlook Survey during December 2023 through February 2024. This app allows you to explore this data.",
-                   className='text-success'),
+                   className='text-primary'),
             width=12
         )
     ]),
