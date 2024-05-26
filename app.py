@@ -95,9 +95,14 @@ state = (df['State Response Estimates']
           )
          )
 
+# State options sorted
+
+state_options = sorted([{'label': state, 'value': state} for state in state['state'].unique()], key=lambda x: x['label'])
+
 # Firm size dictionary
 
-label_to_size = {'A': 'Small', 'B': 'Small', 'C': 'Small', 'D': "Small", 'E': 'Medium', 'F': 'Medium', 'G': "Large"}
+label_to_size = {'XX': 'Multiunit companies', 'A': '1-4 employees', 'B': '5-9 employees', 'C': '10-19 employees', 'D': '20-49 employees', 'E': '50-99 employees', 'F':'100-249 employees',
+                 'G': '250 or more employees'}
 
 # Employment data cleanup
 
@@ -127,117 +132,79 @@ server = app.server #required for deployment on render
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.H1("How are US Businesses Adopting AI?", className='text-center text-primary mb-4'), width=12),
-        dbc.Col(
-            html.P("AI is one of the transformative technologies of our times. How US businesses adopt this technology "
-                   "is of utmost importance. The US Census Bureau added supplemental content on AI to its Business Trends and "
-                   "Outlook Survey during December 2023 through February 2024. This app allows you to explore this data.",
-                   className='text-primary'),
-            width=12
-        )
+        dbc.Col(html.P("AI is one of the transformative technologies of our times. "
+                       "How US businesses adopt this technology is of utmost importance. "
+                       "The US Census Bureau added supplemental content on AI to its Business Trends and Outlook Survey "
+                       "during December 2023 through February 2024. This app allows you to explore this data.",
+                       className='text-primary'), width=12)
     ]),
     dbc.Tabs([
         dbc.Tab(label="National Trends", children=[
             dbc.Row([
-                dbc.Card([
-                    dbc.CardHeader('Pick a Question'),
-                    dbc.CardBody(
-                        dcc.Dropdown(
-                            id='question-dropdown',
-                            options= [{'label': question, 'value': question}
-                                      for question in national[national['answer'] != 'nan']['question'].unique()],
-                            placeholder="Select Question", style={'width': '1250px'}
-                        )
-                    )
-                ], style={'height': '200px'}),
-            ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
-            dbc.Row([
-                dbc.Card(id='graph-card', style={'height': '500px'})
-            ], xs=12, sm=12, md=12, lg=6, xl=6)
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader('Pick a Question'),
+                        dbc.CardBody(dcc.Dropdown(id='question-dropdown', options=[{'label': question, 'value': question} for question in national[national['answer'] != 'nan']['question'].unique()], placeholder="Select Question"))
+                    ], className="mb-3")
+                ], xs=12, sm=12, md=12, lg=12, xl=12),
+                dbc.Col([
+                    dbc.Card(id='graph-card')
+                ], xs=12, sm=12, md=12, lg=12, xl=12)
+            ])
         ]),
-
         dbc.Tab(label="Sector Trends", children=[
             dbc.Row([
-                dbc.Card([
-                    dbc.CardHeader('Pick a Question and Sector'),
-                    dbc.CardBody([
-                        dcc.Dropdown(
-                            id='sector-question-dropdown',
-                            options=[{'label': question, 'value': question}
-                                     for question in sector['question'].unique()],
-                            placeholder="Select Question",
-                            style={'width': '600px', 'display': 'inline-block'}
-                        ),
-                        dcc.Dropdown(
-                            id='sector-dropdown',
-                            options=[{'label': industry, 'value': industry}
-                                     for industry in sector['industry'].unique()],
-                            placeholder="Select Sector",
-                            style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
-                        )
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader('Pick a Question and Sector'),
+                        dbc.CardBody([
+                            dcc.Dropdown(id='sector-question-dropdown', options=[{'label': question, 'value': question} for question in sector['question'].unique()], placeholder="Select Question", className="mb-3"),
+                            dcc.Dropdown(id='sector-dropdown', options=[{'label': industry, 'value': industry} for industry in sector['industry'].unique()], placeholder="Select Sector", className="mb-3")
+                        ])
                     ])
-                ], style={'height': '200px'}),
-            ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
-            dbc.Row([
-                dbc.Card(id='sector-graph-card', style={'height': '500px'})
-            ], xs=12, sm=12, md=12, lg=6, xl=6)
+                ], xs=12, sm=12, md=12, lg=12, xl=12),
+                dbc.Col([
+                    dbc.Card(id='sector-graph-card')
+                ], xs=12, sm=12, md=12, lg=6, xl=6)
+            ])
         ]),
         dbc.Tab(label="State Trends", children=[
-           dbc.Row([
-               dbc.Card([
-                   dbc.CardHeader('Pick a Question and one State'),
-                   dbc.CardBody([
-                       dcc.Dropdown(
-                           id='state-question-dropdown',
-                           options=[{'label': question, 'value': question}
-                                    for question in state['question'].unique()],
-                           placeholder="Select Question",
-                           style={'width': '600px', 'display': 'inline-block'}
-                       ),
-                       dcc.Dropdown(
-                           id='state-dropdown',
-                           options=[{'label': state, 'value': state}
-                                    for state in state['state'].unique()],
-                           placeholder="Select State",
-                           style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
-                       )
-                   ])
-               ], style={'height': '200px'}),
-           ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
-           dbc.Row([
-               dbc.Card(id='state-graph-card', style={'height': '500px'})
-           ], xs=12, sm=12, md=12, lg=6, xl=6)
-       ]),
-       dbc.Tab(label="Firm Size Trends", children=[
-           dbc.Row([
-               dbc.Card([
-                   dbc.CardHeader('Pick a Question and Firm Size category'),
-                   dbc.CardBody([
-                       dcc.Dropdown(
-                           id='firm-question-dropdown',
-                           options=[{'label': question, 'value': question}
-                                    for question in employment['question'].unique()],
-                           placeholder="Select Question",
-                           style={'width': '600px', 'display': 'inline-block'}
-                       ),
-                       dcc.Dropdown(
-                           id='firm-size-dropdown',
-                           options=[{'label': size, 'value': size}
-                                    for size in employment['emp_size'].unique()],
-                           placeholder="Select Firm Size category",
-                           style={'width': '600px', 'display': 'inline-block', 'marginLeft': '50px'}
-                       )
-                   ])
-               ], style={'height': '200px'}),
-           ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
-           dbc.Row([
-               dbc.Card(id='firm-size-graph-card', style={'height': '500px'})
-           ], xs=12, sm=12, md=12, lg=6, xl=6),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader('Pick a Question and one State'),
+                        dbc.CardBody([
+                            dcc.Dropdown(id='state-question-dropdown', options= [{'label': question, 'value': question} for question in state['question'].unique()], placeholder="Select Question", className="mb-3"),
+                            dcc.Dropdown(id='state-dropdown', options= state_options, placeholder="Select State", className="mb-3")
+                        ])
+                    ])
+                ], xs=12, sm=12, md=12, lg=12, xl=12),
+                dbc.Col([
+                    dbc.Card(id='state-graph-card')
+                ], xs=12, sm=12, md=12, lg=12, xl=12)
+            ])
+        ]),
+        dbc.Tab(label="Firm Size Trends", children=[
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader('Pick a Question and Firm Size category'),
+                        dbc.CardBody([
+                            dcc.Dropdown(id='firm-question-dropdown', options=[{'label': question, 'value': question} for question in employment['question'].unique()], placeholder="Select Question", className="mb-3"),
+                            dcc.Dropdown(id='firm-size-dropdown', options=[{'label': size, 'value': size} for size in employment['emp_size'].unique()], placeholder="Select Firm Size category", className="mb-3")
+                        ])
+                    ])
+                ], xs=12, sm=12, md=12, lg=12, xl=12),
+                dbc.Col([
+                    dbc.Card(id='firm-size-graph-card')
+                ], xs=12, sm=12, md=12, lg=12, xl=12)
+            ])
+        ])
     ]),
-]),
     dbc.Row([
-        dbc.Col(html.Img(src="/assets/aatiny.jpg", style={'marginRight': '50px'}, height="50px"), width=6, style={'textAlign': 'right'}),
-        ], style={"position": "fixed", "bottom": '10px', "right": '10px', "zIndex": 999})
-       ], xs=12, sm=12, md=12, lg=6, xl=6)
+        dbc.Col(html.Img(src="/assets/aatiny.jpg", className="img-fluid mx-auto d-block"), width=12, style={'textAlign': 'center'})
+    ], style={"position": "fixed", "bottom": '10px', "right": '10px', "zIndex": 999})
+], fluid=True)
 
 # National bar chart callback
 
@@ -299,21 +266,21 @@ def update_state_bar_chart(question, state_name):
 # Firm size bar chart callback
 
 @app.callback(
-   Output('firm-size-graph-card', 'children'),
-   [Input('firm-question-dropdown', 'value'), Input('firm-size-dropdown', 'value')]
+    Output('firm-size-graph-card', 'children'),
+    [Input('firm-question-dropdown', 'value'), Input('firm-size-dropdown', 'value')]
 )
 def update_firm_size_bar_chart(question, firm_size):
-   if question and firm_size:
-       filtered_data = employment.loc[(employment['question'] == question) & (employment['emp_size'] == firm_size)]
-       sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
-       sorted_data = sorted_data[sorted_data['answer'] != 'nan']
-       fig = dcc.Graph(
-           figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
-                         template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
-       )
-       return dbc.CardBody(fig)
-   else:
-       return dbc.CardBody('Please select a question and firm size category to view the bar chart.')
+    if question and firm_size:
+        filtered_data = employment.loc[(employment['question'] == question) & (employment['emp_size'] == firm_size)]
+        sorted_data = filtered_data.sort_values(by='estimate', ascending=False)
+        sorted_data = sorted_data[sorted_data['answer'] != 'nan']
+        fig = dcc.Graph(
+            figure=px.bar(sorted_data, x='estimate', y='answer', orientation='h', labels={'estimate': 'Percentage', 'answer': ''},
+                          template='plotly_white', color='answer', color_continuous_scale='Viridis').update_layout(margin=dict(l=0, r=0, t=0, b=0))
+        )
+        return dbc.CardBody(fig)
+    else:
+        return dbc.CardBody('Please select a question and firm size category to view the bar chart.')
 
 # Run the app
 if __name__ == '__main__':
