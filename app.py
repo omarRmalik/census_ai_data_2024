@@ -149,10 +149,10 @@ app.layout = dbc.Container([
                         )
                     )
                 ], style={'height': '200px'}),
-            ], style={'marginBottom': '30px'}),
+            ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
             dbc.Row([
                 dbc.Card(id='graph-card', style={'height': '500px'})
-            ])
+            ], xs=12, sm=12, md=12, lg=6, xl=6)
         ]),
 
         dbc.Tab(label="Sector Trends", children=[
@@ -176,10 +176,10 @@ app.layout = dbc.Container([
                         )
                     ])
                 ], style={'height': '200px'}),
-            ], style={'marginBottom': '30px'}),
+            ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
             dbc.Row([
                 dbc.Card(id='sector-graph-card', style={'height': '500px'})
-            ])
+            ], xs=12, sm=12, md=12, lg=6, xl=6)
         ]),
         dbc.Tab(label="State Trends", children=[
            dbc.Row([
@@ -202,10 +202,10 @@ app.layout = dbc.Container([
                        )
                    ])
                ], style={'height': '200px'}),
-           ], style={'marginBottom': '30px'}),
+           ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
            dbc.Row([
                dbc.Card(id='state-graph-card', style={'height': '500px'})
-           ])
+           ], xs=12, sm=12, md=12, lg=6, xl=6)
        ]),
        dbc.Tab(label="Firm Size Trends", children=[
            dbc.Row([
@@ -228,16 +228,16 @@ app.layout = dbc.Container([
                        )
                    ])
                ], style={'height': '200px'}),
-           ], style={'marginBottom': '30px'}),
+           ], style={'marginBottom': '30px'}, xs=12, sm=12, md=12, lg=6, xl=6),
            dbc.Row([
                dbc.Card(id='firm-size-graph-card', style={'height': '500px'})
-           ]),
+           ], xs=12, sm=12, md=12, lg=6, xl=6),
     ]),
 ]),
     dbc.Row([
         dbc.Col(html.Img(src="/assets/aatiny.jpg", style={'marginRight': '50px'}, height="50px"), width=6, style={'textAlign': 'right'}),
         ], style={"position": "fixed", "bottom": '10px', "right": '10px', "zIndex": 999})
-       ])
+       ], xs=12, sm=12, md=12, lg=6, xl=6)
 
 # National bar chart callback
 
