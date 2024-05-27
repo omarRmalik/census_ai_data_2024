@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import pandas as pd
 import plotly.express as px
 import dash
@@ -101,8 +102,16 @@ state_options = sorted([{'label': state, 'value': state} for state in state['sta
 
 # Firm size dictionary
 
-firm_size_order = {'A': '1-4 employees', 'B': '5-9 employees', 'C': '10-19 employees', 'D': '20-49 employees', 'E': '50-99 employees', 'F':'100-249 employees',
-                 'G': '250 or more employees', 'XX': 'Multi-unit Companies' }
+firm_size_order = OrderedDict([
+    ('A', '1-4 employees'),
+    ('B', '5-9 employees'),
+    ('C', '10-19 employees'),
+    ('D', '20-49 employees'),
+    ('E', '50-99 employees'),
+    ('F', '100-249 employees'),
+    ('G', '250 or more employees'),
+    ('XX', 'Multi-unit Companies')
+])
 
 # Employment data cleanup
 
@@ -122,12 +131,7 @@ employment = (df['Employment Response Estimates']
           )
           .drop('empsize', axis='columns')
          )
-# Sorted firm size categories
 
-firm_size_options = sorted(
-    [{'label': size, 'value': size} for size in employment['emp_size'].unique()],
-    key=lambda x: firm_size_order.get(x['value'], 0)  # Use 0 as a fallback value if the key is not found
-)
 
 # Instantiate app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LITERA], meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}])
@@ -197,7 +201,9 @@ app.layout = dbc.Container([
                         dbc.CardHeader('Pick a Question and Firm Size category'),
                         dbc.CardBody([
                             dcc.Dropdown(id='firm-question-dropdown', options=[{'label': question, 'value': question} for question in employment['question'].unique()], placeholder="Select Question", className="mb-3"),
-                            dcc.Dropdown(id='firm-size-dropdown', options=firm_size_options, placeholder="Select Firm Size category", className="mb-3")
+                            dcc.Dropdown(id='firm-size-dropdown',
+                                         options= [{'label': firm_size, 'value': firm_size} for firm_size in firm_size_order.values()],
+                                         placeholder="Select Firm Size category", className="mb-3")
                         ])
                     ])
                 ], xs=12, sm=12, md=12, lg=12, xl=12),
