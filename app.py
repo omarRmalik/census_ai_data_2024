@@ -175,7 +175,7 @@ app.layout = dbc.Container([
                 ], xs=12, sm=12, md=12, lg=12, xl=12),
                 dbc.Col([
                     dbc.Card(id='sector-graph-card')
-                ], xs=12, sm=12, md=12, lg=6, xl=6)
+                ], xs=12, sm=12, md=12, lg=12, xl=12)
             ])
         ]),
         dbc.Tab(label="State Trends", children=[
