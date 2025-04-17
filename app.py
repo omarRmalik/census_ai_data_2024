@@ -296,4 +296,4 @@ def update_firm_size_bar_chart(question, firm_size):
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server()
+    app.run()
